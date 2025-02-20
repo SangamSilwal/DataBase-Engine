@@ -16,6 +16,7 @@ void select_all_from_table(char *);
 void select_specific_from_table(char *,int *);
 void process_query(char *);
 int read_lines_from_csv(FILE *);
+void merge_CSV_file(FILE *,FILE *);
 
 int main()
 {
@@ -68,12 +69,12 @@ void process_query(char *query)
         select_all_from_table(table_name);
     }
     else if (sscanf(query, "SELECT FROM %s WHERE %[^=]=%s", table_name, schema, data) == 3) {
-        int id = atoi(data);  // Convert condition value to integer
+        int id = atoi(data);  
         select_specific_from_table(table_name, &id);
     }
     else 
     {
-        printf("Invalid QUERY");
+        printf("Invalid QUERY\n");
     }
 }
 
@@ -179,3 +180,6 @@ void select_specific_from_table(char *tablename,int *id ) {
     printf("ID %d not found!\n", *id);
     fclose(file);
 }
+
+
+
