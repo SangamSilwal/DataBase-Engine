@@ -16,7 +16,7 @@ void select_all_from_table(char *);
 void select_specific_from_table(char *,int *);
 void process_query(char *);
 int read_lines_from_csv(FILE *);
-void merge_CSV_file(FILE *,FILE *);
+void merge_CSV_file(char *,char *);
 
 int main()
 {
@@ -56,6 +56,7 @@ int read_lines_from_csv(FILE *fp)
 void process_query(char *query)
 {
     char table_name[TABLE_SIZE],schema[SCHEMA_SIZE],data[DATA_SIZE];int id;
+    char fileName1[TABLE_SIZE],fileName2[TABLE_SIZE];
     if((sscanf(query,"CREATE TABLE %s (%[^)])",table_name,schema))==2)
     {
         create_table(table_name,schema);
@@ -71,6 +72,10 @@ void process_query(char *query)
     else if (sscanf(query, "SELECT FROM %s WHERE %[^=]=%s", table_name, schema, data) == 3) {
         int id = atoi(data);  
         select_specific_from_table(table_name, &id);
+    }
+    else if(sscanf(query,"%s %s",fileName1,fileName2) == 2)
+    {
+        merge_CSV_file(fileName1,fileName2);
     }
     else 
     {
@@ -181,5 +186,33 @@ void select_specific_from_table(char *tablename,int *id ) {
     fclose(file);
 }
 
+
+void merge_CSV_file(char *csv_file_1,char *csv_file_2)
+{
+    char filename1[100],filename2[100],schma1[SCHEMA_SIZE],schma2[SCHEMA_SIZE];
+    sprintf(filename1,"%s.csv",csv_file_1);
+    sprintf(filename2,"%s.csv",csv_file_2);
+
+    FILE *fp_1,*fp_2;
+
+    fp_1 = fopen(filename1,"r");
+    fp_2 = fopen(filename2,"r");
+
+    //Just storing the first of the file in the schma 1 and 2
+    fgets(schma1,SCHEMA_SIZE,fp_1);
+    fgets(schma2,SCHEMA_SIZE,fp_2);
+
+    // Comparing if the schma of both lines matches or not
+    if(strcmp(schma1,schma2) != 0)
+    {
+        printf("Can only Merge same type of file\nThe file you have entered contains different type of Data\n");
+        return;
+    }
+    printf("Yes it matches\n");
+
+
+
+
+}
 
 
