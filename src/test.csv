@@ -1,4 +1,42 @@
-pk Porduct_id product_name product_qty
-1 89 Soup 56
-2 45 manang 78
-3 46 MustangGold 56
+pk,Porduct_id,product_name,product_qty
+1,89,Soup,56
+2,45,manang,78
+3,46,MustangGold,56
+4,32,EverestTea,120
+5,78,HimalayanSalt,90
+6,23,YakCheese,45
+7,91,ChocoBites,150
+8,56,GreenTea,200
+9,67,DarjeelingTea,85
+10,11,NepaliHoney,60
+11,99,BlackPepper,75
+12,43,OrganicCoffee,95
+13,29,MomoMasala,110
+14,65,PureGhee,70
+15,87,MasalaChai,130
+16,21,SpicyPickle,55
+17,34,BasmatiRice,180
+18,76,Lentils,140
+19,58,TurmericPowder,160
+20,92,DryFruitsMix,220
+21,14,CashewNuts,250
+22,81,AlmondButter,90
+23,38,MustardOil,105
+24,57,BuckwheatFlour,125
+25,73,FlaxSeeds,80
+26,62,HimalayanHerbs,65
+27,98,GingerPowder,115
+28,19,CinnamonSticks,95
+29,46,OrganicJaggery,170
+30,33,NepaliChocolate,100
+31,50,PineNuts,135
+32,88,ChiliFlakes,150
+33,40,MixedHerbs,85
+34,79,PeppermintTea,75
+35,66,NepaliSweets,190
+36,31,RaisinMix,145
+37,55,Quinoa,200
+38,47,DriedMango,180
+39,74,DriedApple,165
+40,12,DriedPineapple,155
+41,74,DriedApple,169
