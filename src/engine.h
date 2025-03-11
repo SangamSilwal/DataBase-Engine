@@ -17,4 +17,5 @@ void select_all_from_table(char *);
 void select_specific_from_table(char *,char *);
 void process_query(char *);
 void merge_CSV_file(char *,char *);
+void delete_from_csv(char *,char *);
 
