@@ -173,10 +173,94 @@ void process_query(char *query)
        
         select_specific_from_table(table_name, schema);
     }
+    else if (sscanf(query, "DELETE FROM %s WHERE %s = '%[^']'", table_name, schema, data) == 3) {
+        delete_from_csv(table_name, schema, data);
+    }
+    
     else 
     {
         printf("\t#======INVALID QUERY======#\n");
     }
+}
+void delete_from_csv(const char *table_name,const char *column_name,const char *value)
+{
+    char filename[FILE_NAME_SIZE];
+    snprintf(filename, sizeof(filename),"%s.csv",table_name);
+    FILE *file = fopen(filename,"r");
+    if(file == NULL){
+        printf("\t#======THE TABLE DOESNOT EXIST======#\n");
+        return;
+    }
+
+    FILE *temp = fopen("temp.csv","w");
+    if(file == NULL){
+        printf("\t#======TEMP TABLE CANNOT BE CREATED======#\n");
+        return;
+    }
+
+    char line[MAX_LINE];
+    int column_index = -1;
+    int first_line = 1;
+
+    while(fgets(line,sizeof(line),file))
+    {
+        char row[MAX_COLUMN][MAX_LINE];
+        int col_count = 0;
+        char temp_line[MAX_LINE];
+        strcpy(temp_line,line);
+
+        char *token = strtok(temp_line,",\n");
+        while(token)
+        {
+            strcpy(row[col_count++],token);
+            token = strtok(NULL,",\n");
+        }
+
+        if(first_line)
+        {
+            first_line = 0;
+            for(int i=0;i<col_count;i++)
+            {
+                if(strcmp(row[i],column_name)==0)
+                {
+                    column_index = i;
+                    break;
+                }
+            }
+            if(column_index == -1)
+            {
+                printf("\t#======ERROR: COLUMN %s NOT FOUND======#\n",column_name);
+                fclose(file);
+                fclose(temp);
+                remove("temp.csv");
+                return;
+            }
+
+            fprintf(temp, "%s",line);
+            continue;           
+        }
+
+        if(strcmp(row[column_index],value) == 0)
+        {
+            continue;
+        }
+
+        for(int i=0;i<col_count;i++)
+        {
+            fprintf(temp,"%s",row[i]);
+            if(i<col_count-1)
+            {
+                fprintf(temp,",");
+            }
+        }
+        fprintf(temp,"\n");
+    }
+    fclose(file);
+    fclose(temp);
+    remove(filename);
+    rename("temp.csv",filename);
+    printf("\t#====== DELETED ROWS WHERE %s = %s FROM TABLE %s ======#\n",column_name,value,table_name);
+
 }
 
 

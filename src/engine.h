@@ -10,6 +10,8 @@
 #define DATA_SIZE 100
 #define BUFFER_SIZE 8192
 #define FILE_NAME_SIZE 100
+#define MAX_LINE 1024
+#define MAX_COLUMN 100
 
 void create_table(char *,char *);
 void insert_into_table(char *,char *);
@@ -17,5 +19,5 @@ void select_all_from_table(char *);
 void select_specific_from_table(char *,char *);
 void process_query(char *);
 void merge_CSV_file(char *,char *);
-void delete_from_csv(char *,char *);
+void delete_from_csv(const char *,const char *,const char *);
 

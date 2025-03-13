@@ -1,11 +1,7 @@
 pk,Porduct_id,product_name,product_qty
-1,89,Soup,56
-2,45,manang,78
-3,46,MustangGold,56
 4,32,EverestTea,120
 5,78,HimalayanSalt,90
 6,23,YakCheese,45
-7,91,ChocoBites,150
 8,56,GreenTea,200
 9,67,DarjeelingTea,85
 10,11,NepaliHoney,60
@@ -30,7 +26,6 @@ pk,Porduct_id,product_name,product_qty
 29,46,OrganicJaggery,170
 30,33,NepaliChocolate,100
 31,50,PineNuts,135
-32,88,ChiliFlakes,150
 33,40,MixedHerbs,85
 34,79,PeppermintTea,75
 35,66,NepaliSweets,190
