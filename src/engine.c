@@ -13,7 +13,7 @@ void create_table(char *tablename,char *schema)
     FILE *file;
     file = fopen(filename,"w");
     if(file == NULL){
-        printf("#======THE TABLE CANNOT BE CREATED======#");
+        printf("#======THE TABLE CANNOT BE CREATED======#\n");
         return;
     }
     fprintf(file,"%s\n",schema);
@@ -30,12 +30,12 @@ void insert_into_table(char *tablename,char *data)
     file = fopen(filename,"a");
     if(file == NULL)
     {
-        printf("#======THE TABLE NAME DOESNOT EXISTS======#");
+        printf("#======THE TABLE NAME DOESNOT EXISTS======#\n");
         return;
     }
     fprintf(file,"%s\n",data);
     fclose(file);
-    printf("#======SUCCESSFULLY INSERTED INTO THE TABLE======#");
+    printf("#======SUCCESSFULLY INSERTED INTO THE TABLE======#\n");
 }
 
 
@@ -49,7 +49,7 @@ void select_all_from_table(char *tablename)
     file = fopen(filename,"r");
     if(file == NULL)
     {
-        printf("\t#======THE TABLE DOESNOT EXISTS======#");
+        printf("\t#======THE TABLE DOESNOT EXISTS======#\n");
         return;
     }
     while(fgets(data,SCHEMA_SIZE,file))

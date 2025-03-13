@@ -8,6 +8,8 @@
 #define SCHEMA_SIZE 100
 #define DATA_SIZE 100
 #define BUFFER_SIZE 8192
+#define MAX_LINE 1024
+#define MAX_COLUMN 100
 
 
 void create_table(char *,char *);
@@ -17,6 +19,7 @@ void select_specific_from_table(char *,int *);
 void process_query(char *);
 int read_lines_from_csv(FILE *);
 void merge_CSV_file(char *,char *);
+void delete_from_csv(const char *,const char *,const char *);
 
 int main()
 {
@@ -73,9 +76,13 @@ void process_query(char *query)
         int id = atoi(data);  
         select_specific_from_table(table_name, &id);
     }
-    else if(sscanf(query,"%s %s",fileName1,fileName2) == 2)
+    // else if(sscanf(query,"%s %s",fileName1,fileName2) == 2)
+    // {
+    //     merge_CSV_file(fileName1,fileName2);
+    // }
+    else if(sscanf(query,"%s %s %s",table_name,schema,data) == 3)
     {
-        merge_CSV_file(fileName1,fileName2);
+        delete_from_csv(table_name,schema,data);
     }
     else 
     {
@@ -213,6 +220,87 @@ void merge_CSV_file(char *csv_file_1,char *csv_file_2)
 
 
 
+}
+void delete_from_csv(const char *table_name, const char *column_name, const char *value) {
+    char filename[MAX_LINE];
+    snprintf(filename, sizeof(filename), "%s.csv", table_name); // CSV file instead of TXT
+
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        printf("Error: Table '%s' not found.\n", table_name);
+        return;
+    }
+
+    FILE *temp = fopen("temp.csv", "w");
+    if (!temp) {
+        printf("Error creating temporary file.\n");
+        fclose(file);
+        return;
+    }
+
+    char line[MAX_LINE];
+    int column_index = -1;
+    int first_line = 1;
+
+    while (fgets(line, sizeof(line), file)) {
+        char row[MAX_COLUMN][MAX_LINE];  // Store columns in an array
+        int col_count = 0;
+
+        // Copy line to avoid strtok modifying the original
+        char temp_line[MAX_LINE];
+        strcpy(temp_line, line);
+
+        // Tokenize the row
+        char *token = strtok(temp_line, ",\n");
+        while (token) {
+            strcpy(row[col_count++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        // Determine column index from header
+        if (first_line) {
+            first_line = 0;
+            for (int i = 0; i < col_count; i++) {
+                if (strcmp(row[i], column_name) == 0) {
+                    column_index = i;
+                    break;
+                }
+            }
+            if (column_index == -1) {
+                printf("Error: Column '%s' not found.\n", column_name);
+                fclose(file);
+                fclose(temp);
+                remove("temp.csv");
+                return;
+            }
+            // Write header to temp file
+            fprintf(temp, "%s", line);
+            continue;
+        }
+
+        // If the row matches the condition, skip writing it (i.e., delete it)
+        if (strcmp(row[column_index], value) == 0) {
+            continue;
+        }
+
+        // Write the row back in proper CSV format
+        for (int i = 0; i < col_count; i++) {
+            fprintf(temp, "%s", row[i]);
+            if (i < col_count - 1) {
+                fprintf(temp, ",");
+            }
+        }
+        fprintf(temp, "\n");  // Add newline after the row
+    }
+
+    fclose(file);
+    fclose(temp);
+
+    // Replace original file with temp file
+    remove(filename);
+    rename("temp.csv", filename);
+
+    printf("Deleted rows where %s = %s from table %s.\n", column_name, value, table_name);
 }
 
 
