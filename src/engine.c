@@ -202,16 +202,16 @@ void process_query(char *query)
 }
 void get_all_commands()
 {
-    printf("\t==========================================================\n");
-    printf("\t|                                                        |\n");
-    printf("\t| CREATE TABLE <tableName> (<attributes>)                |\n");
-    printf("\t| INSERT INTO TABLE <tableName> (<value>)                |\n");
-    printf("\t| SELECT * FROM <tableName>                              |\n");
-    printf("\t| SELECT FROM <tableName> WHERE <attributes>=<value>     |\n");
-    printf("\t| DELECT FROM <tableName> WHERE <attribute> = '<value>'  |\n");
-    printf("\t| READ FROM TABLE <tableName> WHERE <attribute> > <value>|\n");
-    printf("\t|                                                        |\n");
-    printf("\t==========================================================\n\n");
+    printf("\t===========================================================\n");
+    printf("\t|                                                         |\n");
+    printf("\t| CREATE TABLE <tableName> (<attributes>)                 |\n");
+    printf("\t| INSERT INTO TABLE <tableName> (<value>)                 |\n");
+    printf("\t| SELECT * FROM <tableName>                               |\n");
+    printf("\t| SELECT FROM <tableName> WHERE <attributes>=<value>      |\n");
+    printf("\t| DELETE FROM <tableName> WHERE <attribute> = '<value>'   |\n");
+    printf("\t| READ FROM TABLE <tableName> WHERE <attribute> > <value> |\n");
+    printf("\t|                                                         |\n");
+    printf("\t===========================================================\n\n");
     
 }
 void read_from_csv(const char *tablename, const char *attribute, double range) {
