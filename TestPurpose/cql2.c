@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define QUERY_SIZE 100
 #define TABLE_SIZE 30
@@ -143,30 +144,7 @@ void insert_into_table(char *tablename,char *data)
 }
 
 
-void select_all_from_table(char *tablename)
-{
-    char filename[100];
-    char meta_file[100];
-    char data[SCHEMA_SIZE];
-    char id[3];
-    sprintf(filename,"%s.csv",tablename);
-    sprintf(meta_file,"%s.meta",tablename);
-    FILE *file,*metafile;
-    file = fopen(filename,"r");
-    metafile = fopen(meta_file,"r");
 
-    if(!file || !metafile)
-    {
-        printf("The table Doesnot EXISTS\n");
-        return;
-    }
-    while(fgets(data,SCHEMA_SIZE,file) && fgets(id,3,metafile))
-    {
-        id[strcspn(id, "\n")] = 0;  
-        data[strcspn(data, "\n")] = 0;
-        printf("%s-\t%s\n",id,data);
-    }
-}
 
 
 void select_specific_from_table(char *tablename,int *id ) {

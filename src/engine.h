@@ -13,6 +13,8 @@
 #define MAX_LINE 1024
 #define MAX_COLUMN 100
 
+void get_all_commands();
+void greet();
 void create_table(char *,char *);
 void insert_into_table(char *,char *);
 void select_all_from_table(char *);

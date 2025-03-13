@@ -1,5 +1,4 @@
 pk,Porduct_id,product_name,product_qty
-4,32,EverestTea,120
 5,78,HimalayanSalt,90
 6,23,YakCheese,45
 8,56,GreenTea,200
@@ -9,7 +8,6 @@ pk,Porduct_id,product_name,product_qty
 12,43,OrganicCoffee,95
 13,29,MomoMasala,110
 14,65,PureGhee,70
-15,87,MasalaChai,130
 16,21,SpicyPickle,55
 17,34,BasmatiRice,180
 18,76,Lentils,140
@@ -31,7 +29,3 @@ pk,Porduct_id,product_name,product_qty
 35,66,NepaliSweets,190
 36,31,RaisinMix,145
 37,55,Quinoa,200
-38,47,DriedMango,180
-39,74,DriedApple,165
-40,12,DriedPineapple,155
-41,74,DriedApple,169

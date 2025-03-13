@@ -4,6 +4,16 @@ struct buffer_string{
     char buffer_str[BUFFER_SIZE];
 };
 
+void greet()
+{
+    printf("\t=======================================================\n");
+    printf("\t|                                                     |\n");
+    printf("\t|                  DATABASE ENGINE WITH C             |\n");
+    printf("\t|                                                     |\n");
+    printf("\t=======================================================\n\n");
+
+}
+
 
 //#====== Function to create a Table ======#
 void create_table(char *tablename,char *schema)
@@ -57,6 +67,7 @@ void select_all_from_table(char *tablename)
         data[strcspn(data,"\n")] = 0;
         printf("\t\t%s\n",data);
     }
+    fclose(file);
 }
 
 //#====== Function to select specific attributes's value from the file ======#
@@ -173,6 +184,10 @@ void process_query(char *query)
        
         select_specific_from_table(table_name, schema);
     }
+    else if(strcmp(query,"--help")==0 || strcmp(query,"--help")==0)
+    {
+        get_all_commands();
+    }
     else if (sscanf(query, "DELETE FROM %s WHERE %s = '%[^']'", table_name, schema, data) == 3) {
         delete_from_csv(table_name, schema, data);
     }
@@ -181,6 +196,20 @@ void process_query(char *query)
     {
         printf("\t#======INVALID QUERY======#\n");
     }
+}
+void get_all_commands()
+{
+    printf("\t========================================================\n");
+    printf("\t|                                                      |\n");
+    printf("\t| CREATE TABLE <tableName> (<attributes>)              |\n");
+    printf("\t| INSERT INTO TABLE <tableName> (<value>)              |\n");
+    printf("\t| SELECT * FROM <tableName>                            |\n");
+    printf("\t| SELECT FROM <tableName> WHERE <attributes>=<value>   |\n");
+    printf("\t| DELECT FROM <tableName> WHERE <attribute> = '<value>'|\n");
+    printf("\t|                                                      |\n");
+    // printf("\t|                                                      |\n");
+    printf("\t========================================================\n\n");
+    
 }
 void delete_from_csv(const char *table_name,const char *column_name,const char *value)
 {
@@ -257,15 +286,24 @@ void delete_from_csv(const char *table_name,const char *column_name,const char *
     }
     fclose(file);
     fclose(temp);
-    remove(filename);
-    rename("temp.csv",filename);
-    printf("\t#====== DELETED ROWS WHERE %s = %s FROM TABLE %s ======#\n",column_name,value,table_name);
+    if (remove(filename) != 0)
+    {
+        printf("\t#======ERROR: FAILED TO REMOVE ORIGINAL FILE %s======#\n", filename);
+        return;
+    }
 
+    if (rename("temp.csv", filename) != 0)
+    {
+        printf("\t#======ERROR: FAILED TO RENAME TEMPORARY FILE TO %s======#\n", filename);
+        return;
+    }
 }
 
+ 
 
 int main()
 {
+    greet();
     while(true)
     {
         printf("\tSQL QUERY: ");
