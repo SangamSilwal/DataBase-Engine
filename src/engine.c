@@ -121,7 +121,7 @@ void select_specific_from_table(char *tablename, char *condition) {
     char *column_token = strtok(temp_line, ",");
     int column_index = -1, index = 0;
 
-    // #========= Find the column index of the attribute using case-insensitive comparison =========#
+    // #========= Find the column index of the attribute using case-sensitive comparison =========#
     while (column_token != NULL) {
         if (strcmp(column_token, search_attribute) == 0) {
             column_index = index;
@@ -168,6 +168,7 @@ void process_query(char *query)
 {
     char table_name[TABLE_SIZE],schema[SCHEMA_SIZE],data[DATA_SIZE];int id;
     char fileName1[TABLE_SIZE],fileName2[TABLE_SIZE];
+    double range;
     if((sscanf(query,"CREATE TABLE %s (%[^)])",table_name,schema))==2)
     {
         create_table(table_name,schema);
@@ -191,7 +192,9 @@ void process_query(char *query)
     else if (sscanf(query, "DELETE FROM %s WHERE %s = '%[^']'", table_name, schema, data) == 3) {
         delete_from_csv(table_name, schema, data);
     }
-    
+    else if(sscanf(query,"READ FROM TABLE %s WHERE %s > %lf",table_name,schema,&range)== 3){
+        read_from_csv(table_name,schema,range);
+    }
     else 
     {
         printf("\t#======INVALID QUERY======#\n");
@@ -199,18 +202,79 @@ void process_query(char *query)
 }
 void get_all_commands()
 {
-    printf("\t========================================================\n");
-    printf("\t|                                                      |\n");
-    printf("\t| CREATE TABLE <tableName> (<attributes>)              |\n");
-    printf("\t| INSERT INTO TABLE <tableName> (<value>)              |\n");
-    printf("\t| SELECT * FROM <tableName>                            |\n");
-    printf("\t| SELECT FROM <tableName> WHERE <attributes>=<value>   |\n");
-    printf("\t| DELECT FROM <tableName> WHERE <attribute> = '<value>'|\n");
-    printf("\t|                                                      |\n");
-    // printf("\t|                                                      |\n");
-    printf("\t========================================================\n\n");
+    printf("\t==========================================================\n");
+    printf("\t|                                                        |\n");
+    printf("\t| CREATE TABLE <tableName> (<attributes>)                |\n");
+    printf("\t| INSERT INTO TABLE <tableName> (<value>)                |\n");
+    printf("\t| SELECT * FROM <tableName>                              |\n");
+    printf("\t| SELECT FROM <tableName> WHERE <attributes>=<value>     |\n");
+    printf("\t| DELECT FROM <tableName> WHERE <attribute> = '<value>'  |\n");
+    printf("\t| READ FROM TABLE <tableName> WHERE <attribute> > <value>|\n");
+    printf("\t|                                                        |\n");
+    printf("\t==========================================================\n\n");
     
 }
+void read_from_csv(const char *tablename, const char *attribute, double range) {
+    char filename[FILE_NAME_SIZE];
+
+    // ######   Opening the csv file for reading purpose  ######
+    sprintf(filename, "%s.csv", tablename);
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("\t#====== THE TABLE DOES NOT EXIST ======#\n");
+        return;
+    }
+    
+
+    char line[MAX_LINE];
+    char row[MAX_COLUMN][MAX_LINE];
+    int col_count = 0, column_index = -1;
+
+    
+    if (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, ",\n");
+        col_count = 0;
+
+        while (token) {
+            if (strcmp(token, attribute) == 0) {
+                column_index = col_count;
+            }
+            strcpy(row[col_count++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        if (column_index == -1) {
+            printf("\t#======ERROR: ATTRIBUTE %s NOT FOUND IN TABLE======#\n", attribute);
+            fclose(file);
+            return;
+        }
+    }
+
+    
+    printf("\n#======ROWS WHERE %s > %d======#\n", attribute, range);
+    while (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, ",\n");
+        int col_idx = 0;
+
+        while (token) {
+            strcpy(row[col_idx++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        
+        int value = atof(row[column_index]); 
+        if (value > range) {
+            for (int i = 0; i < col_count; i++) {
+                printf("|%s ", row[i]);
+            }
+            printf("\n");
+        }
+    }
+
+    fclose(file);
+}
+
+
 void delete_from_csv(const char *table_name,const char *column_name,const char *value)
 {
     char filename[FILE_NAME_SIZE];

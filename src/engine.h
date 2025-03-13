@@ -22,4 +22,5 @@ void select_specific_from_table(char *,char *);
 void process_query(char *);
 void merge_CSV_file(char *,char *);
 void delete_from_csv(const char *,const char *,const char *);
+void read_from_csv(const char *,const char *,double  );
 

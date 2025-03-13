@@ -21,7 +21,7 @@ void process_query(char *);
 int read_lines_from_csv(FILE *);
 void merge_CSV_file(char *,char *);
 void delete_from_csv(const char *,const char *,const char *);
-
+void read_from_csv(const char *,const char *,double );
 int main()
 {
     while(true)
@@ -61,29 +61,32 @@ void process_query(char *query)
 {
     char table_name[TABLE_SIZE],schema[SCHEMA_SIZE],data[DATA_SIZE];int id;
     char fileName1[TABLE_SIZE],fileName2[TABLE_SIZE];
-    if((sscanf(query,"CREATE TABLE %s (%[^)])",table_name,schema))==2)
-    {
-        create_table(table_name,schema);
-    }
-    else if((sscanf(query,"INSERT INTO TABLE %s (%[^)])",table_name,data))==2)
-    {
-        insert_into_table(table_name,data);
-    }
-    else if((sscanf(query,"SELECT * FROM %s",table_name))==1)
-    {
-        select_all_from_table(table_name);
-    }
-    else if (sscanf(query, "SELECT FROM %s WHERE %[^=]=%s", table_name, schema, data) == 3) {
-        int id = atoi(data);  
-        select_specific_from_table(table_name, &id);
-    }
+    int range;
+    // if((sscanf(query,"CREATE TABLE %s (%[^)])",table_name,schema))==2)
+    // {
+    //     create_table(table_name,schema);
+    // }
+    // else if((sscanf(query,"INSERT INTO TABLE %s (%[^)])",table_name,data))==2)
+    // {
+    //     insert_into_table(table_name,data);
+    // }
+   
+    // else if (sscanf(query, "SELECT FROM %s WHERE %[^=]=%s", table_name, schema, data) == 3) {
+    //     int id = atoi(data);  
+    //     select_specific_from_table(table_name, &id);
+    // }
     // else if(sscanf(query,"%s %s",fileName1,fileName2) == 2)
     // {
     //     merge_CSV_file(fileName1,fileName2);
     // }
-    else if(sscanf(query,"%s %s %s",table_name,schema,data) == 3)
+    // else if(sscanf(query,"%s %s %s",table_name,schema,data) == 3)
+    // {
+    //     delete_from_csv(table_name,schema,data);
+    // }
+    if(sscanf(query,"READ %s %s %d",table_name,schema,&range) == 3)
     {
-        delete_from_csv(table_name,schema,data);
+        printf("hey");
+        read_from_csv(table_name,schema,range);
     }
     else 
     {
@@ -144,8 +147,60 @@ void insert_into_table(char *tablename,char *data)
 }
 
 
+void read_from_csv(const char *filename, const char *attribute, double range) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("\t#======ERROR: FILE DOES NOT EXIST======#\n");
+        return;
+    }
 
+    char line[MAX_LINE];
+    char row[MAX_COLUMN][MAX_LINE];
+    int col_count = 0, column_index = -1;
 
+    // Read the first line to find the column index
+    if (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, ",\n");
+        col_count = 0;
+
+        while (token) {
+            if (strcmp(token, attribute) == 0) {
+                column_index = col_count;
+            }
+            strcpy(row[col_count++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        if (column_index == -1) {
+            printf("\t#======ERROR: ATTRIBUTE %s NOT FOUND IN TABLE======#\n", attribute);
+            fclose(file);
+            return;
+        }
+    }
+
+    // Now, read the remaining lines to filter based on the condition
+    printf("\n#======ROWS WHERE %s > %.2f======#\n", attribute, range);
+    while (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, ",\n");
+        int col_idx = 0;
+
+        while (token) {
+            strcpy(row[col_idx++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        // Convert the value of the specified column to a number and compare
+        double value = atof(row[column_index]); // assuming the column has numerical values
+        if (value > range) {
+            for (int i = 0; i < col_count; i++) {
+                printf("|%s ", row[i]);
+            }
+            printf("\n");
+        }
+    }
+
+    fclose(file);
+}
 
 void select_specific_from_table(char *tablename,int *id ) {
     char filename[100], buffer[SCHEMA_SIZE],buffer1[SCHEMA_SIZE];
