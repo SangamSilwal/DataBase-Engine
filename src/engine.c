@@ -9,6 +9,7 @@ void greet()
     printf("\t=======================================================\n");
     printf("\t|                                                     |\n");
     printf("\t|                  DATABASE ENGINE WITH C             |\n");
+    printf("\t|         *******Type --help for guidance*******      |\n");
     printf("\t|                                                     |\n");
     printf("\t=======================================================\n\n");
 
@@ -193,7 +194,14 @@ void process_query(char *query)
         delete_from_csv(table_name, schema, data);
     }
     else if(sscanf(query,"READ FROM TABLE %s WHERE %s > %lf",table_name,schema,&range)== 3){
-        read_from_csv(table_name,schema,range);
+        read_from_csv_greater(table_name,schema,range);
+    }
+    else if(sscanf(query,"READ FROM TABLE %s WHERE %s < %lf",table_name,schema,&range)== 3){
+        read_from_csv_smaller(table_name,schema,range);
+    }
+    else if(sscanf(query,"SELECT %s FROM %s",schema,table_name)==2)
+    {
+        select_column(table_name,schema);
     }
     else 
     {
@@ -210,11 +218,13 @@ void get_all_commands()
     printf("\t| SELECT FROM <tableName> WHERE <attributes>=<value>      |\n");
     printf("\t| DELETE FROM <tableName> WHERE <attribute> = '<value>'   |\n");
     printf("\t| READ FROM TABLE <tableName> WHERE <attribute> > <value> |\n");
+    printf("\t| READ FROM TABLE <tablename> WHERE <attribute> < <value> |\n");
+    printf("\t| SELECT <columnName> FROM <tablename>                    |\n");
     printf("\t|                                                         |\n");
     printf("\t===========================================================\n\n");
     
 }
-void read_from_csv(const char *tablename, const char *attribute, double range) {
+void read_from_csv_greater(const char *tablename, const char *attribute, double range) {
     char filename[FILE_NAME_SIZE];
 
     // ######   Opening the csv file for reading purpose  ######
@@ -264,6 +274,65 @@ void read_from_csv(const char *tablename, const char *attribute, double range) {
         
         int value = atof(row[column_index]); 
         if (value > range) {
+            for (int i = 0; i < col_count; i++) {
+                printf("|%s ", row[i]);
+            }
+            printf("\n");
+        }
+    }
+
+    fclose(file);
+}
+void read_from_csv_smaller(const char *tablename, const char *attribute, double range) {
+    char filename[FILE_NAME_SIZE];
+
+    // ######   Opening the csv file for reading purpose  ######
+    sprintf(filename, "%s.csv", tablename);
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("\t#====== THE TABLE DOES NOT EXIST ======#\n");
+        return;
+    }
+    
+
+    char line[MAX_LINE];
+    char row[MAX_COLUMN][MAX_LINE];
+    int col_count = 0, column_index = -1;
+
+    
+    if (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, ",\n");
+        col_count = 0;
+
+        while (token) {
+            if (strcmp(token, attribute) == 0) {
+                column_index = col_count;
+            }
+            strcpy(row[col_count++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        if (column_index == -1) {
+            printf("\t#======ERROR: ATTRIBUTE %s NOT FOUND IN TABLE======#\n", attribute);
+            fclose(file);
+            return;
+        }
+    }
+
+    
+    printf("\n#======ROWS WHERE %s > %d======#\n", attribute, range);
+    while (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, ",\n");
+        int col_idx = 0;
+
+        while (token) {
+            strcpy(row[col_idx++], token);
+            token = strtok(NULL, ",\n");
+        }
+
+        
+        int value = atof(row[column_index]); 
+        if (value < range) {
             for (int i = 0; i < col_count; i++) {
                 printf("|%s ", row[i]);
             }
@@ -361,6 +430,62 @@ void delete_from_csv(const char *table_name,const char *column_name,const char *
         printf("\t#======ERROR: FAILED TO RENAME TEMPORARY FILE TO %s======#\n", filename);
         return;
     }
+}
+
+void select_column(const char *table_name,const char *column_name)
+{
+    char filename[FILE_NAME_SIZE];
+    snprintf(filename, sizeof(filename),"%s.csv",table_name);
+    FILE *file = fopen(filename,"r");
+    if(file == NULL){
+        printf("\t#======THE TABLE DOESNOT EXIST======#\n");
+        return;
+    }
+    char line[MAX_LINE];
+    char headers[MAX_COLUMN][50];
+    int col_index = -1;
+
+    if(fgets(line,sizeof(line),file))
+    {
+        char *token = strtok(line,",\n");
+        int i=0;
+        while(token)
+        {
+            strcpy(headers[i],token);
+            if(strcmp(token,column_name)== 0)
+            {
+                col_index = i;
+            }
+            token = strtok(NULL,",\n");
+            i++;
+        }
+    }
+
+    if(col_index == -1)
+    {
+        printf("\t#======ERROR: COLUMN %s NOT FOUND======#\n",column_name);
+        fclose(file);
+        return;
+    }
+
+
+    while(fgets(line,sizeof(line),file))
+    {
+        char *token = strtok(line,",\n");
+        int i =0;
+        while(token)
+        {
+            if(i==col_index)
+            {
+                printf("\t%s\n",token);
+                break;
+            }
+            token = strtok(NULL,",\n");
+            i++;
+        }
+    }
+    fclose(file);
+
 }
 
  

@@ -20,7 +20,8 @@ void insert_into_table(char *,char *);
 void select_all_from_table(char *);
 void select_specific_from_table(char *,char *);
 void process_query(char *);
-void merge_CSV_file(char *,char *);
 void delete_from_csv(const char *,const char *,const char *);
-void read_from_csv(const char *,const char *,double  );
+void read_from_csv_greater(const char *,const char *,double  );
+void read_from_csv_smaller(const char *, const char *, double);
+void select_column(const char *,const char *);
 
